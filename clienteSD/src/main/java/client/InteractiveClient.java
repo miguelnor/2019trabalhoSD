@@ -17,6 +17,22 @@ public class InteractiveClient extends Thread {
 
     private Register register;
 
+    private String serverHost;
+
+    private int serverPort;
+
+
+    public InteractiveClient() {
+
+    }
+
+
+    public InteractiveClient( String hostname, int port ) {
+
+        setServerHost( hostname );
+        setServerPort( port );
+    }
+
 
     public void run() {
 
@@ -26,9 +42,12 @@ public class InteractiveClient extends Thread {
             prepareForAnotherInteraction();
             showMenu();
             input = reader.nextLine();
+
             try {
+
                 handleInputOption( input );
             } catch ( NumberFormatException e ) {
+
                 handleInputError();
             }
         }
@@ -36,6 +55,12 @@ public class InteractiveClient extends Thread {
 
         terminateMenu();
         reader.close();
+    }
+
+
+    private void prepareForAnotherInteraction() {
+
+        setRegister( new Register() );
     }
 
 
@@ -48,7 +73,7 @@ public class InteractiveClient extends Thread {
         System.out.println( "3.Update (atualizar) registro" );
         System.out.println( "4.Delete (excluir) registro" );
         System.out.println( "5.Sair" );
-        System.out.println( "Opcao escolhida: " );
+        System.out.print( "Opcao escolhida: " );
     }
 
 
@@ -81,10 +106,59 @@ public class InteractiveClient extends Thread {
     }
 
 
+    private void commandCreate() {
+
+        showCreateInstructions();
+        handleCreate();
+    }
+
+
     private void commandRead() {
 
         showReadInstructions();
         handleRead();
+    }
+
+
+    private void showReadInstructions() {
+
+        System.out.println( "2.Read (ler) registro:" );
+        System.out.println( "Entre com o id do registro que seja efetuar a leitura..." );
+    }
+
+
+    private void handleRead() {
+
+        System.out.print( "id: " );
+        if ( validEntryForRead() ) {
+
+            getRegister().setKey( reader.nextBigInteger() );
+            System.out.println( "Enviando requisicao para o servidor..." );
+            // TODO envio para servidor
+        } else {
+
+            System.out.println( "Entrada nao e valida! Tente novamente..." );
+        }
+    }
+
+
+    private boolean validEntryForRead() {
+
+        return reader.hasNextBigInteger();
+    }
+
+
+    private void commandUpdate() {
+
+        showUpdateInstructions();
+        handleUpdate();
+    }
+
+
+    private void commandDelete() {
+
+        showDeleteInstructions();
+        handleDelete();
     }
 
 
@@ -104,8 +178,10 @@ public class InteractiveClient extends Thread {
 
         System.out.println( "Saindo..." );
         try {
+
             Thread.sleep( getSleepTimeInMillis() );
         } catch ( InterruptedException e ) {
+
             e.printStackTrace();
         }
     }
@@ -144,5 +220,29 @@ public class InteractiveClient extends Thread {
     public void setRegister( Register register ) {
 
         this.register = register;
+    }
+
+
+    public String getServerHost() {
+
+        return serverHost;
+    }
+
+
+    public void setServerHost( String serverHost ) {
+
+        this.serverHost = serverHost;
+    }
+
+
+    public int getServerPort() {
+
+        return serverPort;
+    }
+
+
+    public void setServerPort( int serverPort ) {
+
+        this.serverPort = serverPort;
     }
 }

@@ -1,6 +1,7 @@
 package client;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -12,13 +13,22 @@ public class Client {
     private static Socket socket;
 
 
+    private static Properties getProperties()
+        throws IOException {
+
+        Properties properties = new Properties();
+        InputStream propIn = Client.class.getClassLoader().getResourceAsStream( "client.properties" );
+        properties.load( propIn );
+
+        return properties;
+    }
+
+
     public static void main( String[] args ) {
 
         try {
 
-            Properties properties = new Properties();
-            InputStream propIn = Client.class.getClassLoader().getResourceAsStream( "client.properties" );
-            properties.load( propIn );
+            Properties properties = getProperties();
 
             String hostname = properties.getProperty( "server.hostname" );
             int port = Integer.parseInt( properties.getProperty( "server.port" ) );

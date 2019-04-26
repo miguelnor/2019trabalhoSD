@@ -1,8 +1,8 @@
 package client;
 
 
-import client.model.CommandEnum;
-import client.model.Register;
+import server.model.Register;
+import server.model.CommandType;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,9 +42,13 @@ public class InteractiveClient extends Thread {
             try {
 
                 handleInputOption( input );
+                Thread.sleep( 200 );
             } catch ( NumberFormatException e ) {
 
                 handleInputError();
+            } catch ( InterruptedException e ) {
+
+                e.printStackTrace();
             }
         }
         while ( isOneMoreInteraction() );
@@ -62,7 +66,7 @@ public class InteractiveClient extends Thread {
 
     private void showMenu() {
 
-        System.out.println( "Menu Interativo" );
+        System.out.println( "\nMenu Interativo" );
         System.out.println( "Escolha uma das opcoes a seguir ou digite \"sair\" para terminar o programa:" );
         System.out.println( "1.Create (criar) registro" );
         System.out.println( "2.Read (ler) registro" );
@@ -77,22 +81,22 @@ public class InteractiveClient extends Thread {
 
         if ( !input.equalsIgnoreCase( "sair" ) ) {
 
-            switch ( CommandEnum.valueOf( Integer.parseInt( input ) ) ) {
+            switch ( CommandType.valueOf( Integer.parseInt( input ) ) ) {
 
                 case CREATE:
-                    commandCreateOrUpdate( CommandEnum.CREATE );
+                    commandCreateOrUpdate( CommandType.CREATE );
                     break;
 
                 case READ:
-                    commandReadOrDelete( CommandEnum.READ );
+                    commandReadOrDelete( CommandType.READ );
                     break;
 
                 case UPDATE:
-                    commandCreateOrUpdate( CommandEnum.UPDATE );
+                    commandCreateOrUpdate( CommandType.UPDATE );
                     break;
 
                 case DELETE:
-                    commandReadOrDelete( CommandEnum.DELETE );
+                    commandReadOrDelete( CommandType.DELETE );
                     break;
 
                 case EXIT:
@@ -117,7 +121,7 @@ public class InteractiveClient extends Thread {
             OutputStreamWriter osw = new OutputStreamWriter( os );
             BufferedWriter bw = new BufferedWriter( osw );
             System.out.println( "Enviando para o servidor request = " + message );
-            bw.write( message );
+            bw.write( message + "\n" );
             bw.flush();
 
         } catch ( IOException e ) {
@@ -127,7 +131,7 @@ public class InteractiveClient extends Thread {
     }
 
 
-    private void commandCreateOrUpdate( CommandEnum operation ) {
+    private void commandCreateOrUpdate( CommandType operation ) {
 
         showCreateOrUpdateInstructions( operation );
         boolean didProperKey = handleEnterKey();
@@ -141,9 +145,9 @@ public class InteractiveClient extends Thread {
     }
 
 
-    private void showCreateOrUpdateInstructions( CommandEnum operation ) {
+    private void showCreateOrUpdateInstructions( CommandType operation ) {
 
-        if ( operation.equals( CommandEnum.UPDATE ) ) {
+        if ( operation.equals( CommandType.UPDATE ) ) {
 
             System.out.println( "3.Update (atualizar) registro" );
             System.out.println( "Entre com a chave do registro que deseja alterar (inteiro)..." );
@@ -194,24 +198,24 @@ public class InteractiveClient extends Thread {
     }
 
 
-    private void sendCreateOrUpdateRequestToServer( CommandEnum operation ) {
+    private void sendCreateOrUpdateRequestToServer( CommandType operation ) {
 
         // format is OP;KEY;VALUE
-        String message = operation.getValue() + ";" + getRegister().getKey() + ";" + getRegister().getValue();
+        String message = operation.getValue() + ";" + getRegister().getKey() + ";" + new String( getRegister().getValue() );
         sendRequestToServer( message );
     }
 
 
-    private void commandReadOrDelete( CommandEnum operation ) {
+    private void commandReadOrDelete( CommandType operation ) {
 
         showReadOrDeleteInstructions( operation );
         handleReadOrDelete( operation );
     }
 
 
-    private void showReadOrDeleteInstructions( CommandEnum operation ) {
+    private void showReadOrDeleteInstructions( CommandType operation ) {
 
-        if ( operation.equals( CommandEnum.READ ) ) {
+        if ( operation.equals( CommandType.READ ) ) {
 
             System.out.println( "2.Read (ler) registro:" );
             System.out.println( "Entre com o id do registro que deseja efetuar a leitura..." );
@@ -224,7 +228,7 @@ public class InteractiveClient extends Thread {
     }
 
 
-    private void handleReadOrDelete( CommandEnum operation ) {
+    private void handleReadOrDelete( CommandType operation ) {
 
         System.out.print( "id: " );
         if ( validEntryForBigInteger() ) {
@@ -245,7 +249,7 @@ public class InteractiveClient extends Thread {
     }
 
 
-    private void sendReadOrDeleteRequestToServer( CommandEnum operation ) {
+    private void sendReadOrDeleteRequestToServer( CommandType operation ) {
 
         // format is OP;KEY
         String message = operation.getValue() + ";" + getRegister().getKey();
@@ -271,25 +275,25 @@ public class InteractiveClient extends Thread {
     }
 
 
-    public Boolean isOneMoreInteraction() {
+    private Boolean isOneMoreInteraction() {
 
         return oneMoreInteraction;
     }
 
 
-    public void setOneMoreInteraction( Boolean oneMoreInteraction ) {
+    private void setOneMoreInteraction( Boolean oneMoreInteraction ) {
 
         this.oneMoreInteraction = oneMoreInteraction;
     }
 
 
-    public Register getRegister() {
+    private Register getRegister() {
 
         return register;
     }
 
 
-    public void setRegister( Register register ) {
+    private void setRegister( Register register ) {
 
         this.register = register;
     }

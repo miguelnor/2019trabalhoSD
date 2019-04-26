@@ -1,11 +1,11 @@
-package client.model;
+package server.model;
 
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-public enum CommandEnum {
+public enum CommandType {
     CREATE( 1 ),
     READ( 2 ),
     UPDATE( 3 ),
@@ -17,21 +17,21 @@ public enum CommandEnum {
     private static Map map = new HashMap();
 
 
-    CommandEnum( int value ) {
+    CommandType( int value ) {
 
         this.value = value;
     }
 
     static {
-        for ( CommandEnum commandEnum : CommandEnum.values() ) {
-            map.put( commandEnum.value, commandEnum );
+        for ( CommandType commandType : CommandType.values() ) {
+            map.put( commandType.value, commandType );
         }
     }
 
 
-    public static CommandEnum valueOf( int commandEnum ) {
+    public static CommandType valueOf( int commandEnum ) {
 
-        return (CommandEnum) map.get( commandEnum );
+        return (CommandType) map.get( commandEnum );
     }
 
 

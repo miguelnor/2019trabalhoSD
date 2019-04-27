@@ -7,8 +7,6 @@ public class Command {
 
     private Register register;
 
-    private String requestId;
-
 
     public CommandType getType() {
 
@@ -34,14 +32,20 @@ public class Command {
     }
 
 
-    public String getRequestId() {
+    @Override
+    public String toString() {
+        // format are OP;KEY;VALUE for create and update and OP;KEY for read and delete
 
-        return requestId;
-    }
+        CommandType commandType = this.getType();
 
+        String commandString = String.valueOf( commandType.getValue() );
+        commandString = commandString.concat( ";" + this.getRegister().getKey().toString() );
 
-    public void setRequestId( String requestId ) {
+        if ( commandType == CommandType.CREATE || commandType == CommandType.UPDATE ) {
 
-        this.requestId = requestId;
+            commandString = commandString.concat( ";" + this.getRegister().getValueAsString() );
+        }
+
+        return commandString;
     }
 }

@@ -36,11 +36,11 @@ public class Client {
             InetAddress address = InetAddress.getByName( hostname );
             socket = new Socket( address, port );
 
-            InteractiveClient interactiveClient = new InteractiveClient( socket );
+            Thread interactiveClient = new Thread( new InteractiveClient( socket ) );
 
             interactiveClient.start();
 
-            ReceptorClient receptorClient = new ReceptorClient( socket );
+            Thread receptorClient = new Thread( new ReceptorClient( socket ) );
 
             receptorClient.start();
 

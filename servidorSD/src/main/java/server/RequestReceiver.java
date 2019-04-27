@@ -5,20 +5,23 @@ import org.apache.log4j.Logger;
 import server.model.Command;
 import server.model.CommandType;
 import server.model.Register;
+import server.model.Request;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.Socket;
-import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class RequestReceiver extends Thread {
+public class RequestReceiver implements Runnable {
 
     private static final Logger LOG = Logger.getLogger( RequestReceiver.class );
 
-    private static final LinkedBlockingQueue< Command > F1 = new LinkedBlockingQueue< Command >();
+    private static final LinkedBlockingQueue< Request > F1 = new LinkedBlockingQueue< Request >();
 
     private static final AtomicInteger REQUESTS_RECEIVED = new AtomicInteger();
 
@@ -34,13 +37,12 @@ public class RequestReceiver extends Thread {
     }
 
 
-    public static Command retrieveCommand() {
+    public static Request retrieveRequest() {
 
         return F1.poll();
     }
 
 
-    @Override
     public void run() {
 
         LOG.info( "Processing request of client# " + this.id );
@@ -51,33 +53,23 @@ public class RequestReceiver extends Thread {
             InputStreamReader isr = new InputStreamReader( is );
             BufferedReader br = new BufferedReader( isr );
 
-            // TODO TIRAR
-            OutputStream os = socket.getOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter( os );
-            BufferedWriter bw = new BufferedWriter( osw );
-
             while ( true ) {
 
-                String request = br.readLine();
-                if ( request == null ) {
+                String line = br.readLine();
+                if ( line == null ) {
                     break;
                 }
 
-                String requestUniqueID = UUID.randomUUID().toString();
+                Request request = new Request( socket );
 
-                LOG.info( "Client#" + this.id + " >>  " + request + " unique requestId: " + requestUniqueID );
+                LOG.info( "Client#" + this.id + " >>  " + line + " unique requestId: " + request.getRequestId() );
 
-                // TODO MOVER ISTO PARA THREAD 2, SO RECUPERAR COMANDO PARA POR EM F3
-                Command command = retrieveCommand( request );
-                command.setRequestId( requestUniqueID );
+                Command command = retrieveCommand( line );
+                request.setCommand( command );
 
-                LOG.info( "Client#" + this.id + " >> Queuing command from requestId: " + command.getRequestId() );
+                LOG.info( "Client#" + this.id + " >> Queuing command from requestId: " + request.getRequestId() );
 
-                F1.put( command );
-
-                // TODO TIRAR
-                bw.write( "Queued! requestId: " + command.getRequestId() + "\n" );
-                bw.flush();
+                F1.put( request );
 
             }
 

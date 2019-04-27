@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class InteractiveClient extends Thread {
+public class InteractiveClient implements Runnable {
 
     private Boolean oneMoreInteraction = Boolean.TRUE;
 
@@ -29,7 +29,6 @@ public class InteractiveClient extends Thread {
     }
 
 
-    @Override
     public void run() {
 
         String input;
@@ -201,7 +200,7 @@ public class InteractiveClient extends Thread {
     private void sendCreateOrUpdateRequestToServer( CommandType operation ) {
 
         // format is OP;KEY;VALUE
-        String message = operation.getValue() + ";" + getRegister().getKey() + ";" + new String( getRegister().getValue() );
+        String message = operation.getValue() + ";" + getRegister().getKey() + ";" + getRegister().getValueAsString();
         sendRequestToServer( message );
     }
 

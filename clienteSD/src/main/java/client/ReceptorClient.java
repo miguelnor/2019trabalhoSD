@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 
-public class ReceptorClient extends Thread {
+public class ReceptorClient implements Runnable {
 
     private Socket socket;
 
@@ -18,7 +18,6 @@ public class ReceptorClient extends Thread {
     }
 
 
-    @Override
     public void run() {
 
         try {

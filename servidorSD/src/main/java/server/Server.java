@@ -14,17 +14,27 @@ public class Server {
 
     private static final Logger LOG = Logger.getLogger( RequestReceiver.class );
 
+    private static final Properties serverProperties = loadProperties();
+
     static {
         BasicConfigurator.configure();
     }
 
 
-    private static Properties getProperties()
-        throws IOException {
+    private static Properties loadProperties() {
 
-        Properties properties = new Properties();
-        InputStream propIn = Server.class.getClassLoader().getResourceAsStream( "server.properties" );
-        properties.load( propIn );
+        Properties properties = null;
+
+        try {
+
+            properties = new Properties();
+            InputStream propIn = Server.class.getClassLoader().getResourceAsStream( "server.properties" );
+            properties.load( propIn );
+
+        } catch ( IOException e ) {
+
+            LOG.error( "error while trying to retrieve properties file!!!!", e );
+        }
 
         return properties;
     }
@@ -34,17 +44,26 @@ public class Server {
 
         try {
 
-            Properties properties = getProperties();
+            String logFile = serverProperties.getProperty( "server.log.file" );
 
-            int port = Integer.parseInt( properties.getProperty( "server.port" ) );
+            Thread requestProcessor = new Thread( new RequestProcessor() );
+            requestProcessor.start();
+
+            Thread requestLogger = new Thread( new RequestLogger( logFile ) );
+            requestLogger.start();
+
+            Thread requestManager = new Thread( new RequestManager() );
+            requestManager.start();
+
+            int port = Integer.parseInt( serverProperties.getProperty( "server.port" ) );
 
             ServerSocket serverSocket = new ServerSocket( port );
             LOG.info( "Server started on port " + port );
 
             while ( true ) {
 
-                RequestReceiver requestReceiver = new RequestReceiver( serverSocket.accept() );
-                requestReceiver.run();
+                Thread requestReceiver = new Thread( new RequestReceiver( serverSocket.accept() ) );
+                requestReceiver.start();
             }
 
         } catch ( Exception e ) {

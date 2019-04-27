@@ -11,6 +11,12 @@ public class Register {
     private byte[] value;
 
 
+    public static String valueToString( byte[] value ) {
+
+        return new String( value );
+    }
+
+
     public BigInteger getKey() {
 
         return key;
@@ -26,6 +32,12 @@ public class Register {
     public byte[] getValue() {
 
         return value;
+    }
+
+
+    public String getValueAsString() {
+
+        return valueToString( value );
     }
 
 

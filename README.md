@@ -26,7 +26,7 @@ Arquitetura da primeira entrega consiste em desenvolver programa com as seguinte
 
 ### Servidor
 
-####A  base de dados
+#### A  base de dados
 - Mapa de BigInteger (inteiro de precisão infinita) para um vetor de bytes (ou algo que o valha).
 - mantido em memória apenas (por enquanto)
 - manipulado por 4 operações (CRUD) observando a semântica de cada operação (create <> update)

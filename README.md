@@ -2,6 +2,7 @@
 
 Este trabalho foi/está sendo desenvolvido para a matéria de Sistemas Distribuídos.
 Faculdade de Computação - Universidade Federal de Uberlândia
+
 Professor: Lásaro Camargos (http://www.facom.ufu.br/~lasaro/)
 
 Desenvolvido por: Miguel S. Pereira

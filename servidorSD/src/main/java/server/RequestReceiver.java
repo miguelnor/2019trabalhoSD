@@ -3,15 +3,12 @@ package server;
 
 import org.apache.log4j.Logger;
 import server.model.Command;
-import server.model.CommandType;
-import server.model.Register;
 import server.model.Request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.net.Socket;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -64,7 +61,7 @@ public class RequestReceiver implements Runnable {
 
                 LOG.info( "Client#" + this.id + " >>  " + line + " unique requestId: " + request.getRequestId() );
 
-                Command command = retrieveCommand( line );
+                Command command = Command.retrieveCommand( line );
                 request.setCommand( command );
 
                 LOG.info( "Client#" + this.id + " >> Queuing command from requestId: " + request.getRequestId() );
@@ -81,30 +78,6 @@ public class RequestReceiver implements Runnable {
 
         LOG.info( "Client#" + this.id + " >>  Exited without saying goodbye..." );
 
-    }
-
-
-    private Command retrieveCommand( String request ) {
-
-        Command command = new Command();
-        String[] requestFields = request.split( ";" );
-
-        if ( requestFields.length > 0 ) {
-
-            command.setType( CommandType.valueOf( Integer.parseInt( requestFields[ 0 ] ) ) );
-
-            Register register = new Register();
-            register.setKey( new BigInteger( requestFields[ 1 ] ) );
-
-            if ( requestFields.length > 2 ) {
-
-                register.setValue( requestFields[ 2 ].getBytes() );
-            }
-
-            command.setRegister( register );
-        }
-
-        return command;
     }
 
 

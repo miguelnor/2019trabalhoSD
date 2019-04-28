@@ -8,7 +8,9 @@ import server.model.Register;
 import server.model.Request;
 import server.model.Response;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -43,10 +45,20 @@ public class RequestProcessor implements Runnable {
 
     private HashMap< BigInteger, byte[] > dataBase = new HashMap< BigInteger, byte[] >();
 
+    private String logFile = "";
+
+
+    public RequestProcessor( String logFile ) {
+
+        this.logFile = logFile;
+    }
+
 
     public void run() {
 
-        //TODO processar arquivo de log se existir
+        LOG.info( "initializing RequestProcessor..." );
+
+        recoverExistentDatabase();
 
         while ( true ) {
 
@@ -54,7 +66,11 @@ public class RequestProcessor implements Runnable {
 
             if ( request != null ) {
 
+                LOG.info( "processing request >> requestId: " + request.getRequestId() );
+
                 Response response = handleRequest( request );
+
+                LOG.info( "request processed, generated response is \"" + response.toString() + "\" >> requestId: " + request.getRequestId() );
 
                 Socket socket = request.getClientSocket();
 
@@ -67,11 +83,44 @@ public class RequestProcessor implements Runnable {
                     bw.write( response.toString() + "\n" );
                     bw.flush();
 
+                    LOG.info( "response sent successfully >> requestId: " + request.getRequestId() );
+
                 } catch ( IOException e ) {
 
-                    LOG.error( "error while sending response back to client... requestId: " + request.getRequestId() );
+                    LOG.error( "error while sending response back to client >> requestId: " + request.getRequestId() );
                 }
             }
+        }
+    }
+
+
+    private void recoverExistentDatabase() {
+
+        BufferedReader logFileReader;
+        if ( !logFile.equals( "" ) ) {
+
+            LOG.info( "recovering dataBase from file " + logFile );
+            try {
+
+                logFileReader = new BufferedReader( new FileReader( logFile ) );
+
+                String commandLine = logFileReader.readLine();
+                while ( commandLine != null ) {
+
+                    LOG.info( "recovering command " + commandLine );
+                    Command command = Command.retrieveCommand( commandLine );
+                    processCUD( command );
+                    commandLine = logFileReader.readLine();
+                }
+                logFileReader.close();
+
+            } catch ( IOException e ) {
+
+                LOG.info( "fail to recover dataBase from file " + logFile );
+            }
+        } else {
+
+            LOG.info( "there's no file to recover, continuing..." );
         }
     }
 

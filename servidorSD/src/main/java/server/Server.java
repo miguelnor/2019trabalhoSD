@@ -46,7 +46,7 @@ public class Server {
 
             String logFile = serverProperties.getProperty( "server.log.file" );
 
-            Thread requestProcessor = new Thread( new RequestProcessor() );
+            Thread requestProcessor = new Thread( new RequestProcessor( logFile ) );
             requestProcessor.start();
 
             Thread requestLogger = new Thread( new RequestLogger( logFile ) );

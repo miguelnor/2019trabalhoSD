@@ -1,11 +1,38 @@
 package server.model;
 
 
+import java.math.BigInteger;
+
+
 public class Command {
 
     private CommandType type;
 
     private Register register;
+
+
+    public static Command retrieveCommand( String request ) {
+
+        Command command = new Command();
+        String[] requestFields = request.split( ";" );
+
+        if ( requestFields.length > 0 ) {
+
+            command.setType( CommandType.valueOf( Integer.parseInt( requestFields[ 0 ] ) ) );
+
+            Register register = new Register();
+            register.setKey( new BigInteger( requestFields[ 1 ] ) );
+
+            if ( requestFields.length > 2 ) {
+
+                register.setValue( requestFields[ 2 ].getBytes() );
+            }
+
+            command.setRegister( register );
+        }
+
+        return command;
+    }
 
 
     public CommandType getType() {

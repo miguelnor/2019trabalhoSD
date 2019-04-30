@@ -45,7 +45,7 @@ public class RequestProcessor implements Runnable {
 
     private HashMap< BigInteger, byte[] > dataBase = new HashMap< BigInteger, byte[] >();
 
-    private String logFile = "";
+    private String logFile;
 
 
     public RequestProcessor( String logFile ) {
@@ -62,7 +62,14 @@ public class RequestProcessor implements Runnable {
 
         while ( true ) {
 
-            Request request = RequestManager.retrieveRequestForProcessing();
+            Request request = null;
+            try {
+
+                request = RequestManager.retrieveRequestForProcessing();
+            } catch ( InterruptedException e ) {
+
+                LOG.error( "error while retrieving request", e );
+            }
 
             if ( request != null ) {
 

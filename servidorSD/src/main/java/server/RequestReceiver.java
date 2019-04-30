@@ -34,9 +34,10 @@ public class RequestReceiver implements Runnable {
     }
 
 
-    public static Request retrieveRequest() {
+    public static Request retrieveRequest()
+        throws InterruptedException {
 
-        return F1.poll();
+        return F1.take();
     }
 
 

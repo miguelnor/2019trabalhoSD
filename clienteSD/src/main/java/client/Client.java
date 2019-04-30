@@ -13,7 +13,7 @@ public class Client {
     private static Socket socket;
 
 
-    private static Properties getProperties()
+    protected static Properties getProperties()
         throws IOException {
 
         Properties properties = new Properties();

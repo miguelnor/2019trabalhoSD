@@ -28,7 +28,14 @@ public class RequestLogger implements Runnable {
 
         while ( true ) {
 
-            Request request = RequestManager.retrieveRequestForLogging();
+            Request request = null;
+            try {
+
+                request = RequestManager.retrieveRequestForLogging();
+            } catch ( InterruptedException e ) {
+
+                LOG.error( "error while retrieving request", e );
+            }
 
             if ( request != null && request.getCommand().getType() != CommandType.READ ) {
 

@@ -16,15 +16,17 @@ public class RequestManager implements Runnable {
     private static final LinkedBlockingQueue< Request > F3 = new LinkedBlockingQueue< Request >();
 
 
-    public static Request retrieveRequestForLogging() {
+    public static Request retrieveRequestForLogging()
+        throws InterruptedException {
 
-        return F2.poll();
+        return F2.take();
     }
 
 
-    public static Request retrieveRequestForProcessing() {
+    public static Request retrieveRequestForProcessing()
+        throws InterruptedException {
 
-        return F3.poll();
+        return F3.take();
     }
 
 
@@ -33,7 +35,15 @@ public class RequestManager implements Runnable {
         LOG.info( "initializing RequestManager..." );
 
         while ( true ) {
-            Request request = RequestReceiver.retrieveRequest();
+            Request request = null;
+
+            try {
+
+                request = RequestReceiver.retrieveRequest();
+            } catch ( InterruptedException e ) {
+
+                LOG.error( "error while retrieving request", e );
+            }
 
             if ( request != null ) {
 

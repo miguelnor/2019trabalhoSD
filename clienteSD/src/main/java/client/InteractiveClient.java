@@ -112,7 +112,7 @@ public class InteractiveClient implements Runnable {
     }
 
 
-    private void sendRequestToServer( String message ) {
+    protected void sendRequestToServer( String message ) {
 
         try {
 

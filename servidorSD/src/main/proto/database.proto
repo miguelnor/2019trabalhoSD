@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_package = "io.grpc.custom.database";
+option java_outer_classname = "DatabaseProto";
+
+package database;
+
+service CRUDService {
+
+    rpc Create (Register) returns (Result) {}
+    rpc Read (Register) returns (Result) {}
+    rpc Update (Register) returns (Result) {}
+    rpc Delete (Register) returns (Result) {}
+}
+
+message Register {
+    bytes key = 1;
+    bytes value = 2;
+}
+
+message Result{
+    int32 code = 1;
+    string message = 2;
+}
